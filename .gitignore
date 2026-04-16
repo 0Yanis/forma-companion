@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+publish/
+
+# User/runtime data
+*.log
+logs/
+profile.json
+
+# IDE/user files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Local packages / archives
+*.zip
+
+# Windows clutter
+Thumbs.db
+Desktop.ini
+
+# PDB / release artifacts
+*.pdb
+*.exe
+*.dll
+*.deps.json
+*.runtimeconfig.json
+forma_companion_icon_pack/

@@ -1,0 +1,229 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:FormatCompanion.Core.Models"
+        x:Class="FormatCompanion.App.Views.MainWindow"
+        Title="Format Companion"
+        Icon="/Assets/app-icon.ico"
+        Width="1450"
+        Height="900">
+
+  <Grid RowDefinitions="Auto,Auto,Auto,5*,1.2*" Margin="12">
+
+    <!-- Storage + scan/save -->
+    <Border Grid.Row="0" Padding="10" BorderBrush="Gray" BorderThickness="1" CornerRadius="6">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0"
+                   Text="Storage folder:"
+                   VerticalAlignment="Center"/>
+        <TextBox Grid.Column="1"
+                 x:Name="StorageFolderTextBox"
+                 PlaceholderText="Example: E:\FormatCompanionData"/>
+        <Button Grid.Column="2"
+                Width="34"
+                Content="..."
+                Click="OnBrowseStorageFolderClicked"/>
+        <Button Grid.Column="3"
+                Content="Scan current software"
+                Click="OnScanCurrentClicked"/>
+        <Button Grid.Column="4"
+                Content="Auto-pick likely apps"
+                Click="OnAutoPickLikelyAppsClicked"/>
+        <Button Grid.Column="5"
+                Content="Save selected profile"
+                Click="OnSaveProfileClicked"/>
+      </Grid>
+    </Border>
+
+    <!-- Load/install actions -->
+    <Border Grid.Row="1" Padding="10" BorderBrush="Gray" BorderThickness="1" CornerRadius="6" Margin="0,10,0,0">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0"
+                   x:Name="ActiveProfileTextBlock"
+                   Text="Active profile: profile.json in storage folder"
+                   VerticalAlignment="Center"
+                   Opacity="0.85"/>
+        <Button Grid.Column="1"
+                Content="Load profile"
+                Click="OnLoadProfileClicked"/>
+        <Button Grid.Column="2"
+                Content="Install selected"
+                Click="OnInstallSelectedClicked"/>
+        <Button Grid.Column="3"
+                Content="Retry failed"
+                Click="OnRetryFailedClicked"/>
+      </Grid>
+    </Border>
+
+    <!-- Summary -->
+    <Border Grid.Row="2" Padding="10" BorderBrush="Gray" BorderThickness="1" CornerRadius="6" Margin="0,10,0,0">
+      <TextBlock x:Name="SummaryTextBlock"
+                 Text="Ready."
+                 TextWrapping="Wrap"/>
+    </Border>
+
+    <!-- Main dual list -->
+    <Border Grid.Row="3" Padding="10" BorderBrush="Gray" BorderThickness="1" CornerRadius="6" Margin="0,10,0,0">
+      <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="12">
+
+        <!-- LEFT -->
+        <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="8">
+          <TextBlock Text="Programs found"
+                     FontWeight="Bold"
+                     FontSize="16"/>
+
+          <DataGrid Grid.Row="1"
+                    x:Name="FoundProgramsDataGrid"
+                    AutoGenerateColumns="False"
+                    CanUserResizeColumns="True"
+                    CanUserSortColumns="True"
+                    GridLinesVisibility="All"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    SelectionMode="Single"
+                    MinHeight="320">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Name" Binding="{ReflectionBinding DisplayName}" Width="2*"/>
+              <DataGridTextColumn Header="Winget ID" Binding="{ReflectionBinding WingetId}" Width="3*"/>
+              <DataGridTextColumn Header="Source" Binding="{ReflectionBinding Source}" Width="1.2*"/>
+              <DataGridTextColumn Header="Version" Binding="{ReflectionBinding Version}" Width="1*"/>
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+
+        <!-- MIDDLE -->
+        <Grid Grid.Column="1" RowDefinitions="*,Auto,Auto,Auto,*" Width="120">
+          <Button Grid.Row="1"
+                  Width="90"
+                  HorizontalAlignment="Center"
+                  Content="&gt;"
+                  Click="OnMoveRightClicked"/>
+          <Button Grid.Row="2"
+                  Width="90"
+                  HorizontalAlignment="Center"
+                  Margin="0,10,0,0"
+                  Content="&lt;"
+                  Click="OnMoveLeftClicked"/>
+          <Button Grid.Row="3"
+                  Width="100"
+                  HorizontalAlignment="Center"
+                  Margin="0,12,0,0"
+                  Content="Transfer all"
+                  Click="OnTransferAllClicked"/>
+        </Grid>
+
+        <!-- RIGHT -->
+        <Grid Grid.Column="2" RowDefinitions="Auto,*" RowSpacing="8">
+          <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <TextBlock Grid.Column="0"
+                       Text="Programs to install"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       VerticalAlignment="Center"/>
+
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="14"
+                        VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Border Width="16" Height="16" Background="#DCFCE7" CornerRadius="2"/>
+                <TextBlock Text="Installed" VerticalAlignment="Center"/>
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Border Width="16" Height="16" Background="#FEF3C7" CornerRadius="2"/>
+                <TextBlock Text="Manual required" VerticalAlignment="Center"/>
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Border Width="16" Height="16" Background="#FEE2E2" CornerRadius="2"/>
+                <TextBlock Text="Failed" VerticalAlignment="Center"/>
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+
+          <DataGrid Grid.Row="1"
+                    x:Name="SelectedProgramsDataGrid"
+                    AutoGenerateColumns="False"
+                    CanUserResizeColumns="True"
+                    CanUserSortColumns="True"
+                    GridLinesVisibility="All"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    SelectionMode="Single"
+                    MinHeight="320">
+            <DataGrid.Columns>
+
+              <DataGridTemplateColumn Header="Name" Width="2*">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="models:AppEntry">
+                    <Border Background="{Binding StatusColorHex}" Padding="4">
+                      <TextBlock Text="{Binding DisplayName}"
+                                 Foreground="{Binding StatusTextColorHex}"
+                                 VerticalAlignment="Center"
+                                 TextTrimming="CharacterEllipsis"/>
+                    </Border>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+
+              <DataGridTemplateColumn Header="Winget ID" Width="3*">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="models:AppEntry">
+                    <Border Background="{Binding StatusColorHex}" Padding="4">
+                      <TextBlock Text="{Binding WingetId}"
+                                 Foreground="{Binding StatusTextColorHex}"
+                                 VerticalAlignment="Center"
+                                 TextTrimming="CharacterEllipsis"/>
+                    </Border>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+
+              <DataGridTemplateColumn Header="Source" Width="1.2*">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="models:AppEntry">
+                    <Border Background="{Binding StatusColorHex}" Padding="4">
+                      <TextBlock Text="{Binding Source}"
+                                 Foreground="{Binding StatusTextColorHex}"
+                                 VerticalAlignment="Center"
+                                 TextTrimming="CharacterEllipsis"/>
+                    </Border>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+
+              <DataGridTemplateColumn Header="Version" Width="1*">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="models:AppEntry">
+                    <Border Background="{Binding StatusColorHex}" Padding="4">
+                      <TextBlock Text="{Binding Version}"
+                                 Foreground="{Binding StatusTextColorHex}"
+                                 VerticalAlignment="Center"
+                                 TextTrimming="CharacterEllipsis"/>
+                    </Border>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+
+      </Grid>
+    </Border>
+
+    <!-- Log -->
+    <Border Grid.Row="4" Padding="10" BorderBrush="Gray" BorderThickness="1" CornerRadius="6" Margin="0,10,0,0">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Text="Log" FontWeight="Bold" Margin="0,0,0,8"/>
+        <TextBox Grid.Row="1"
+                 x:Name="LogTextBox"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+      </Grid>
+    </Border>
+
+  </Grid>
+</Window>
