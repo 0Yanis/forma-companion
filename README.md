@@ -1,3 +1,5 @@
+<img width="512" height="512" alt="forma_companion_app_512 - Copy" src="https://github.com/user-attachments/assets/d4890612-4a3d-4c39-bcd9-5b74fa2e499d" />
+
 # Forma Companion
 
 Forma Companion is a portable Windows utility for rebuilding your software setup after a format or clean install.
@@ -10,6 +12,11 @@ It helps you:
 - reload the profile later
 - reinstall supported apps through WinGet
 - keep track of installed, failed, and manual-only items
+
+---
+
+<img width="1459" height="924" alt="UI - Copy" src="https://github.com/user-attachments/assets/11706b72-5305-4c2e-b664-c260b1dfb278" />
+
 
 ---
 
