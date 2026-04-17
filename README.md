@@ -15,7 +15,8 @@ It helps you:
 
 ---
 
-<img width="1459" height="924" alt="UI - Copy" src="https://github.com/user-attachments/assets/11706b72-5305-4c2e-b664-c260b1dfb278" />
+<img width="1450" height="930" alt="UI" src="https://github.com/user-attachments/assets/3d83c32b-7b8d-41ba-968e-5b73a5210333" />
+
 
 
 ---
